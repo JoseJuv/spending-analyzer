@@ -13,7 +13,7 @@ from decimal import Decimal
 from .categorize import CONFIRMED_SOURCES, CategorizationReport, categorize
 from .llm import LLMClient
 from .models import Statement
-from .pdf_parser import parse_statement
+from .pdf_parser import UnsupportedLayout, parse_statement
 from .store import Store
 from .synthetic import generate, render
 
@@ -34,7 +34,11 @@ def parse_upload(filename: str, data: bytes) -> ParsedUpload:
     balance/count checks is returned with the errors, so the UI can show why."""
     try:
         statement = parse_statement(io.BytesIO(data))
-    except Exception as error:  # not a PDF, or not this bank's statement layout
+    except UnsupportedLayout as error:
+        return ParsedUpload(filename, None, [
+            f"Not a supported statement ({error}). Only OP account statement PDFs can "
+            "be read for now."])
+    except Exception as error:  # not a PDF at all, or a damaged one
         return ParsedUpload(filename, None, [f"Could not read the statement: {error}"])
     return ParsedUpload(filename, statement, statement.validation_errors())
 

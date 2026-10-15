@@ -2,7 +2,7 @@
 
 A privacy-first personal finance tool: it reads bank statement PDFs,
 categorizes every transaction, and answers questions about your spending in plain
-language — with the AI model running **on your own computer**.
+language.
 
 The project is a study in using AI only where it adds value, keeping a human in
 control of every decision, and measuring the result instead of guessing:
@@ -227,8 +227,9 @@ couldn't resolve is an error rather than a silent "this month".
 
 ## Limitations and future work
 
-- **One bank's layout.** A new bank needs a new parser (or a CSV reader); the rest
-  of the pipeline is unchanged.
+- **One bank's layout.** Another bank's PDF is rejected with a clear message rather
+  than half-read. A new bank needs a new parser (or a CSV reader); the rest of the
+  pipeline is unchanged.
 - **MobilePay/Vipps recipients are unknown.** The bank statement shows only the app,
   not who received the money, so those payments are grouped as such. Names would
   need a second source, such as the app's own history.

@@ -1,3 +1,7 @@
+import io
+
+from reportlab.pdfgen import canvas
+
 from spending_analyzer import synthetic
 from spending_analyzer.pipeline import (categorize_and_import, confirmed_share, is_imported,
                                         parse_upload)
@@ -21,6 +25,19 @@ def test_parse_upload_reads_and_validates_from_memory(tmp_path):
 def test_parse_upload_reports_an_unreadable_file():
     upload = parse_upload("notes.pdf", b"this is not a pdf")
     assert upload.statement is None and not upload.valid and upload.errors
+
+
+def test_another_banks_statement_is_rejected_with_a_clear_reason():
+    """Regression: the error used to be blank ("Could not read the statement: ")."""
+    buffer = io.BytesIO()
+    pdf = canvas.Canvas(buffer)
+    for y, line in ((800, "Other Bank Ltd - Account statement"),
+                    (780, "01.09.2026  Grocery store  -23,40")):
+        pdf.drawString(50, y, line)
+    pdf.save()
+    upload = parse_upload("other.pdf", buffer.getvalue())
+    assert upload.statement is None
+    assert "Not a supported statement" in upload.errors[0]
 
 
 def test_upload_categorize_review_end_to_end(tmp_path, store):

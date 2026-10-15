@@ -38,6 +38,11 @@ DETAIL_LABEL_RE = re.compile(
     r"\b(alkuperäinen (maksaja|saaja)|lopullinen saaja|maksajan viite)\b", re.IGNORECASE)
 
 
+class UnsupportedLayout(ValueError):
+    """The PDF reads, but it isn't the statement layout this parser knows (another
+    bank, or another kind of document)."""
+
+
 @dataclass
 class Line:
     """One printed line split into columns."""
@@ -100,7 +105,7 @@ def _body_lines(page) -> list[Line]:
     header_end = next(
         (i for i, line in enumerate(lines) if line[0]["text"] == "Arvopäivä"), None)
     if header_end is None:
-        raise ValueError(f"Column header not found on page {page.page_number}")
+        raise UnsupportedLayout(f"column header not found on page {page.page_number}")
 
     body = []
     for words in lines[header_end + 1:]:
@@ -116,8 +121,10 @@ def _read_header(page) -> tuple[str, date, date]:
     """Account IBAN and statement period from the first page."""
     lines = _group_lines(page.extract_words())
     texts = [" ".join(w["text"] for w in line) for line in lines]
-    iban = next(t.removeprefix("Tilinumero").replace(" ", "")
-                for t in texts if t.startswith("Tilinumero"))
+    iban = next((t.removeprefix("Tilinumero").replace(" ", "")
+                 for t in texts if t.startswith("Tilinumero")), None)
+    if iban is None or "Ajalta" not in texts:
+        raise UnsupportedLayout("account number or statement period not found")
     period = texts[texts.index("Ajalta") + 1]  # e.g. "1.9. - 30.9.2026"
     start_text, end_text = (part.strip() for part in period.split(" - "))
     end = parse_date(end_text)
