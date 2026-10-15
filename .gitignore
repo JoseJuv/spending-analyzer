@@ -1,0 +1,25 @@
+# Real data never goes into version control
+data/
+*.pdf
+*.csv
+!tests/fixtures/**
+layout_*.txt
+*.db
+*.sqlite
+
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.env
+
+# Local tool settings (contain machine-specific paths)
+.claude/
+
+# Claude context
+CLAUDE.local.md
+Claude.md
+
+# Screenshot sessions (synthetic demo data only)
+.screens/
