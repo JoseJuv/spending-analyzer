@@ -38,7 +38,7 @@ flowchart LR
     B --> C{Known<br/>counterparty?}
     C -->|yes: your rule| E[Categorized]
     C -->|no| D[Local LLM<br/>suggests]
-    D --> R[Review:<br/>you confirm or fix]
+    D --> R[Review:<br/>you confirm/fix]
     R -->|becomes a rule| E
     E --> F[(SQLite,<br/>local)]
     F --> G[Results<br/>dashboard]
@@ -262,3 +262,7 @@ tools/anonymize_structure.py   masked layout dump of a real statement
 docs/statement-layout.md       the statement layout the parser targets
 tests/                         pytest, incl. headless UI tests
 ```
+
+## License
+
+[MIT](LICENSE)

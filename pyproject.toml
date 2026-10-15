@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,6 +7,8 @@ name = "spending-analyzer"
 version = "0.1.0"
 description = "Privacy-first personal spending analyzer for bank statement PDFs"
 requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = [
     "pdfplumber>=0.11",
     "reportlab>=4",
